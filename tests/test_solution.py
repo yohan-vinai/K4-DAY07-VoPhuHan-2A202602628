@@ -25,6 +25,7 @@ _mock_embed = getattr(_m, '_mock_embed')
 FixedSizeChunker = getattr(_m, 'FixedSizeChunker')
 SentenceChunker = getattr(_m, 'SentenceChunker')
 RecursiveChunker = getattr(_m, 'RecursiveChunker')
+HeadingSectionChunker = getattr(_m, 'HeadingSectionChunker')
 ChunkingStrategyComparator = getattr(_m, 'ChunkingStrategyComparator')
 MockEmbedder = getattr(_m, 'MockEmbedder')
 template = _m
@@ -52,7 +53,7 @@ class TestProjectStructure(unittest.TestCase):
 class TestClassBasedInterfaces(unittest.TestCase):
 
     def test_chunker_classes_exist(self):
-        self.assertTrue(all([FixedSizeChunker, SentenceChunker, RecursiveChunker, ChunkingStrategyComparator]))
+        self.assertTrue(all([FixedSizeChunker, SentenceChunker, RecursiveChunker, HeadingSectionChunker, ChunkingStrategyComparator]))
 
     def test_mock_embedder_exists(self):
         embedder = MockEmbedder()
@@ -142,6 +143,20 @@ class TestRecursiveChunker(unittest.TestCase):
         text = "paragraph one\n\nparagraph two\n\nparagraph three"
         chunks = RecursiveChunker(separators=["\n\n"], chunk_size=200).chunk(text)
         self.assertGreaterEqual(len(chunks), 1)
+
+
+class TestHeadingSectionChunker(unittest.TestCase):
+
+    def test_keeps_heading_with_its_section(self):
+        text = "# Điều 1\n\nNội dung thứ nhất.\n\n## Điều 2\n\nNội dung thứ hai."
+        chunks = HeadingSectionChunker(chunk_size=100).chunk(text)
+        self.assertEqual(chunks, ["# Điều 1\n\nNội dung thứ nhất.", "## Điều 2\n\nNội dung thứ hai."])
+
+    def test_repeats_heading_when_long_section_is_split(self):
+        text = "# Điều 1\n\n" + ("nội dung dài " * 30)
+        chunks = HeadingSectionChunker(chunk_size=100).chunk(text)
+        self.assertGreater(len(chunks), 1)
+        self.assertTrue(all(chunk.startswith("# Điều 1") for chunk in chunks))
 
 
 class TestEmbeddingStore(unittest.TestCase):

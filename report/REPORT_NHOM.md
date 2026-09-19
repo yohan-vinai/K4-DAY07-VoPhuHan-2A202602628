@@ -1,8 +1,8 @@
 # Báo Cáo Nhóm — Lab 7: Embedding & Vector Store
 
 **Nhóm:** [Tên nhóm]
-**Thành viên:** [Họ tên từng thành viên]
-**Ngày:** [Ngày nộp]
+**Thành viên:** Võ Phú Hãn (2A202602628), Vũ Duy Điệp (2A202602703), Võ Minh Quân (2A202602429)
+**Ngày:** 2026-09-19
 
 > **Nộp 1 bản / nhóm.** Phần cá nhân (hướng tiếp cận, kết quả riêng, dự đoán…) mỗi thành viên nộp riêng trong `REPORT_CANHAN.md`. Chi tiết thang điểm: `docs/SCORING.md`.
 
@@ -14,31 +14,39 @@
 
 ### Chủ đề (Domain) & Lý Do Chọn
 
-**Chủ đề:** [ví dụ: Customer support FAQ, Luật Việt Nam, công thức nấu ăn, ...]
+**Chủ đề:** Quy định đào tạo và dịch vụ học vụ đại học
 
 **Tại sao nhóm chọn chủ đề này?**
-> *Viết 2-3 câu:*
+> Nhóm chọn chủ đề này vì phù hợp trực tiếp với biến thể K4-L3A và có câu hỏi thực tế cho sinh viên, giảng viên và cán bộ. ViRHE4QA có context, câu hỏi và gold answer tiếng Việt, phù hợp để thử retrieval và metadata filtering.
 
 ### Danh sách tài liệu (Data Inventory)
 
 | # | Tên tài liệu | Nguồn (Source URL) | Ngày lấy / Phiên bản | Số ký tự | Metadata đã gán |
 |---|--------------|------------|--------------------|----------|-----------------|
-| 1 | | | | | |
-| 2 | | | | | |
-| 3 | | | | | |
-| 4 | | | | | |
-| 5 | | | | | |
+| 1 | Quy chế đào tạo chính quy | https://github.com/DoPhamPhucTinh/R2GQA | 2026-09-19 / not-stated | 165112 | `{"audience":"student","department":"Phòng Đào tạo","category":"Quy chế đào tạo"}` |
+| 2 | Quy định tổ chức thi | https://github.com/DoPhamPhucTinh/R2GQA | 2026-09-19 / not-stated | 172845 | `{"audience":"student","department":"Phòng Khảo thí","category":"Kiểm tra và thi cử"}` |
+| 3 | Quy định khóa luận tốt nghiệp | https://github.com/DoPhamPhucTinh/R2GQA | 2026-09-19 / not-stated | 81053 | `{"audience":"student","department":"Phòng Đào tạo","category":"Đánh giá tốt nghiệp"}` |
+| 4 | Quy chế văn bằng, chứng chỉ | https://github.com/DoPhamPhucTinh/R2GQA | 2026-09-19 / not-stated | 127573 | `{"audience":"all","department":"Phòng Đào tạo","category":"Hồ sơ học vụ"}` |
+| 5 | Quy định dạy học trực tuyến | https://github.com/DoPhamPhucTinh/R2GQA | 2026-09-19 / not-stated | 90254 | `{"audience":"all","department":"Phòng Đào tạo","category":"Dạy và học"}` |
+| 6 | Quy định tiêu chuẩn giảng viên | https://github.com/DoPhamPhucTinh/R2GQA | 2026-09-19 / not-stated | 86554 | `{"audience":"faculty","department":"Phòng Công tác giảng viên","category":"Dạy và học"}` |
+| 7 | Quy định công tác giáo trình | https://github.com/DoPhamPhucTinh/R2GQA | 2026-09-19 / not-stated | 114266 | `{"audience":"faculty","department":"Phòng Công tác giảng viên","category":"Dạy và học"}` |
+| 8 | Quy trình phân công cán bộ coi thi | https://github.com/DoPhamPhucTinh/R2GQA | 2026-09-19 / not-stated | 54176 | `{"audience":"staff","department":"Phòng Khảo thí","category":"Kiểm tra và thi cử"}` |
 
 **Danh sách kiểm tra quản trị dữ liệu (Data governance checklist):**
-- [ ] Tập tài liệu (Corpus) chỉ chứa nguồn công khai/được phép dùng và không chứa dữ liệu cá nhân, thông tin đăng nhập hoặc tài liệu nội bộ.
-- [ ] Mỗi tài liệu có `source_url`, `retrieved_at`, `document_version` (hoặc ngày hiệu lực) trong metadata.
+- [x] Tập tài liệu (Corpus) chỉ chứa nguồn công khai/được phép dùng và không chứa dữ liệu cá nhân, thông tin đăng nhập hoặc tài liệu nội bộ.
+- [x] Mỗi tài liệu có `source_url`, `retrieved_at`, `document_version` (hoặc ngày hiệu lực) trong metadata.
 
 ### Cấu trúc Metadata (Metadata Schema)
 
 | Trường metadata | Kiểu | Ví dụ giá trị | Tại sao hữu ích cho truy xuất (retrieval)? |
 |----------------|------|---------------|-------------------------------|
-| | | | |
-| | | | |
+| `audience` | string | `student`, `faculty`, `staff`, `all` | Lọc theo đối tượng áp dụng |
+| `department` | string | `Phòng Đào tạo`, `Phòng Khảo thí` | Lọc theo đơn vị phụ trách |
+| `category` | string | `Dạy và học`, `Kiểm tra và thi cử` | Lọc theo loại quy định |
+| `language` | string | `vi` | Xác định ngôn ngữ corpus |
+| `source_url` | string | GitHub R2GQA | Truy vết nguồn |
+| `retrieved_at` | date | `2026-09-19` | Thời điểm lấy dữ liệu |
+| `document_version` | string | `not-stated` | Không bịa version khi nguồn không nêu |
 
 ---
 
@@ -48,46 +56,61 @@
 
 ### Phân tích đường cơ sở (Baseline Analysis)
 
-Chạy `ChunkingStrategyComparator().compare()` trên 2-3 tài liệu:
+Chạy trên `data/university` với `chunk_size=500`, `max_sentences_per_chunk=3`, `overlap=0`, local multilingual embedding và `top_k=3`:
 
 | Tài liệu | Chiến lược (Strategy) | Số lượng Chunk | Độ dài trung bình | Giữ được ngữ cảnh không? |
 |-----------|----------|-------------|------------|-------------------|
-| | FixedSizeChunker (`fixed_size`) | | | |
-| | SentenceChunker (`by_sentences`) | | | |
-| | RecursiveChunker (`recursive`) | | | |
+| Corpus `data/university` (5 file) | HeadingSectionChunker (`heading_section`) | 503 | 355,13 | Giữ heading Điều/Mục trong từng chunk |
+| Corpus `data/university` (5 file) | SentenceChunker (`by_sentences`) | 617 | 270,55 | Giữ ranh giới câu nhưng nhiều chunk |
+| Corpus `data/university` (5 file) | RecursiveChunker (`recursive`) | 521 | 305,04 | Cân bằng cấu trúc và độ dài |
+
+**Lần chạy SentenceChunker của thành viên 2 trên 3 tài liệu:**
+
+- Cấu hình: `SentenceChunker(max_sentences_per_chunk=3)`; `chunk_size` không áp dụng cho chiến lược này.
+- Tổng số chunk: **1.415**.
+- Độ dài trung bình: **294,18 ký tự**.
+- Nhận xét: chunk kết thúc tại ranh giới câu, giữ ý trọn vẹn tốt hơn cách cắt theo số ký tự.
 
 ### Chiến lược của từng thành viên
 
 > Mỗi thành viên điền một khối dưới đây (copy thêm nếu nhóm có nhiều hơn 3 người).
 
-**Thành viên 1 — [Tên]**
-- **Loại chiến lược:** [FixedSize / Sentence / Recursive / custom]
-- **Mô tả & lý do chọn cho chủ đề này:** *(2-3 câu)*
+**Thành viên 1 — Võ Phú Hãn (2A202602628)**
+- **Loại chiến lược:** HeadingSectionChunker (`heading_section`)
+- **Mô tả & lý do chọn cho chủ đề này:** Tách theo heading Markdown nên một chunk luôn bắt đầu bằng tên Điều/Mục và giữ phần nội dung của section đó. Khi section vượt quá 500 ký tự, chunker chia phần thân bằng RecursiveChunker rồi lặp heading trên các chunk con. Cách này phù hợp với văn bản quy định vì điều khoản là đơn vị ngữ nghĩa tự nhiên.
+- **Cấu hình:** `HeadingSectionChunker(chunk_size=500)`.
 - **Code snippet (nếu custom):**
 ```python
-# Dán mã nguồn (implementation) vào đây
+HeadingSectionChunker(chunk_size=500)
 ```
 
-**Thành viên 2 — [Tên]**
-- **Loại chiến lược:**
-- **Mô tả & lý do chọn:**
+**Thành viên 2 — Vũ Duy Điệp (2A202602703)**
+- **Loại chiến lược:** SentenceChunker (`max_sentences_per_chunk=3`)
+- **Mô tả & lý do chọn:** Trên corpus gồm 5 tài liệu, chiến lược tạo 617 chunk với độ dài trung bình 270,55 ký tự. Chunk được ghép tối đa ba câu và không cắt giữa câu, giúp giữ ngữ cảnh tự nhiên hơn cách cắt theo số ký tự. Đánh đổi là một chunk có thể chứa nhiều ý nếu ba câu liền nhau không cùng một điều khoản.
 - **Code snippet (nếu custom):**
+```python
+SentenceChunker(max_sentences_per_chunk=3)
+```
 
-**Thành viên 3 — [Tên]**
-- **Loại chiến lược:**
-- **Mô tả & lý do chọn:**
+**Thành viên 3 — Võ Minh Quân (2A202602429)**
+- **Loại chiến lược:** RecursiveChunker (`chunk_size=500`)
+- **Mô tả & lý do chọn:** Tách đệ quy theo separator `['\\n\\n', '\\n', '. ', ' ', '']`, ưu tiên đoạn văn, dòng và câu trước khi fallback về ranh giới ký tự. Cơ chế greedy merge gom các mảnh liền kề sát ngưỡng 500 ký tự, giảm mảnh vụn và giữ ngữ cảnh điều khoản tốt hơn.
+- **Bài toán overlap:** Với tài liệu 10.000 ký tự, `chunk_size=500`, `overlap=50`, stride là 450 và cần 23 chunks. Nếu overlap tăng lên 100, stride còn 400 và số chunk tăng lên 25; đổi lại ranh giới điều khoản được giữ ngữ cảnh tốt hơn.
 - **Code snippet (nếu custom):**
+```python
+RecursiveChunker(chunk_size=500)
+```
 
 ### So Sánh Giữa Các Thành Viên
 
 | Thành viên | Chiến lược (Strategy) | Điểm truy xuất (/10) | Điểm mạnh | Điểm yếu |
 |-----------|----------|----------------------|-----------|----------|
-| | | | | |
-| | | | | |
-| | | | | |
+| Võ Phú Hãn (2A202602628) | Heading/section | 10 / 10 | Giữ tên Điều/Mục cùng nội dung điều khoản | Section dài vẫn cần fallback chia nhỏ |
+| Vũ Duy Điệp (2A202602703) | Sentence | 8 / 10 | Giữ ranh giới câu tự nhiên | Có thể gom nhiều ý vào một chunk |
+| Võ Minh Quân (2A202602429) | Recursive | 10 / 10 | Ưu tiên paragraph/newline/sentence | Phụ thuộc separator và greedy merge |
 
 **Chiến lược nào tốt nhất cho chủ đề này? Tại sao?**
-> *Viết 2-3 câu — đây là phần được đánh giá cao nhất (khả năng suy nghĩ & giải thích):*
+> HeadingSectionChunker và RecursiveChunker cùng đạt 5/5 câu; SentenceChunker đạt 4/5. HeadingSectionChunker đáp ứng yêu cầu có ít nhất một thành viên chia theo heading/section và giúp kiểm tra nguồn theo Điều/Mục trực tiếp.
 
 ---
 
@@ -97,13 +120,15 @@ Chạy `ChunkingStrategyComparator().compare()` trên 2-3 tài liệu:
 
 > **Đúng 5 câu hỏi**, đa dạng, có thể kiểm chứng; **ít nhất 1 câu** cần lọc metadata mới trả lời tốt. Đây là bộ câu hỏi chung cho mọi thành viên chạy.
 
-| # | Câu hỏi (Query) | Câu trả lời chuẩn (Gold Answer) | Chunk nào chứa thông tin? |
-|---|-------|-------------------------------|--------------------------|
-| 1 | | | |
-| 2 | | | |
-| 3 | | | |
-| 4 | | | |
-| 5 | | | |
+| # | Câu hỏi (Query) | Metadata filter | Câu trả lời chuẩn (Gold Answer) | Chunk nào chứa thông tin? |
+|---|-------|-----------------|-------------------------------|--------------------------|
+| 1 | Quy trình hoãn thi giữa kỳ cần thực hiện như thế nào? | `{"audience":"student"}` | Nộp đơn kèm minh chứng cho Phòng Đào tạo Đại học trong vòng 03 ngày kể từ ngày thi. | Điều tổng hợp S1 — Quy chế đào tạo chính quy |
+| 2 | Bộ phận nào của Trường sẽ xem xét các trường hợp có lí do chính đáng để vắng thi giữa kỳ? | `{}` | P.ĐTĐH | Điều 21 — Quy định tổ chức thi |
+| 3 | Thời hạn lưu trữ đề thi các môn học hệ đại học chính quy của Trường là bao lâu? | `{}` | 9 năm | Điều 21 — Quy định khóa luận tốt nghiệp |
+| 4 | Sinh viên thuộc chương trình tài năng có các hình thức nào? | `{}` | chính thức và dự bị | Điều 2 — Quy trình phân công cán bộ coi thi |
+| 5 | KLTN là viết tắt của cụm từ nào? | `{}` | Khóa luận tốt nghiệp | Điều 2 — Một số thuật ngữ, chữ viết tắt, Quy định khóa luận tốt nghiệp |
+
+> **Note về metadata filter:** Câu 1 không nêu đối tượng. Filter `{"audience":"student"}` chọn Điều tổng hợp S1: sinh viên nộp đơn trong 03 ngày; filter `{"audience":"faculty"}` chọn Điều tổng hợp F1: giảng viên xác nhận lý do và gửi bảng điểm trong 05 ngày làm việc. Đây là dữ liệu synthetic do nhóm thêm để kiểm thử filter, không phải quy định chính thức của trường.
 
 ### Tổng hợp chất lượng truy xuất của nhóm
 
@@ -111,27 +136,27 @@ Chạy `ChunkingStrategyComparator().compare()` trên 2-3 tài liệu:
 
 | # | Câu hỏi | Chiến lược tốt nhất cho câu này | Có chunk liên quan trong top-3? | Ghi chú |
 |---|---------|-------------------------------|-------------------------------|---------|
-| 1 | | | | |
-| 2 | | | | |
-| 3 | | | | |
-| 4 | | | | |
-| 5 | | | | |
+| 1 | HeadingSectionChunker / RecursiveChunker | Có, rank 1 | Filter `audience=student` lấy đúng điều khoản S1; Sentence rank 3 |
+| 2 | HeadingSectionChunker / RecursiveChunker | Có, rank 2 | Hai strategy đều có chunk chứa gold answer ở rank 2 |
+| 3 | HeadingSectionChunker / SentenceChunker / RecursiveChunker | Có, rank 1 | Cả ba strategy đều truy xuất gold answer |
+| 4 | SentenceChunker | Có, rank 1 | Recursive rank 2 |
+| 5 | HeadingSectionChunker / SentenceChunker | Có, rank 1 | Recursive rank 2 |
 
 **Lọc bằng metadata có giúp ích không? Ở câu hỏi nào?**
-> *Viết 2-3 câu:*
+> Theo output notebook trên `data/university`: HeadingSectionChunker **5/5 (100%)**, SentenceChunker **4/5 (80%)**, RecursiveChunker **5/5 (100%)**. Agent answer chưa được chấm vì notebook chưa truyền `llm_fn`.
 
 ---
 
 ## 4. Thuyết trình (Demo) & Bài học nhóm — Nhóm (5 điểm)
 
 **Những phân tích (insights) hay nhất nhóm sẽ trình bày:**
-> *Liệt kê 2-3 ý:*
+> Case metadata cho thấy filter student đưa kết quả về đúng tài liệu student; nhánh faculty vẫn cần cải thiện xếp hạng chunk để lấy được điều khoản synthetic F1 trong top-3.
 
 **Bài học rút ra khi so sánh trong nhóm:**
-> *Viết 2-3 câu — cùng tài liệu nhưng chiến lược khác nhau dẫn tới khác biệt gì?*
+> HeadingSectionChunker giữ tên Điều/Mục khi truy xuất; SentenceChunker giữ ranh giới câu; RecursiveChunker cân bằng giữa cấu trúc và kích thước. Kết quả top-3 cần được đọc cùng cấu hình embedding và phạm vi corpus.
 
 **Nếu làm lại, nhóm sẽ thay đổi gì trong chiến lược dữ liệu (data strategy)?**
-> *Viết 2-3 câu:*
+> Nếu làm lại, nhóm sẽ lưu chunk/embedding sau lần chạy đầu và benchmark trên subset trước, sau đó mới mở rộng sang toàn bộ corpus. Các đoạn synthetic phải luôn được đánh dấu riêng với nguồn ViRHE4QA.
 
 ---
 
@@ -139,8 +164,8 @@ Chạy `ChunkingStrategyComparator().compare()` trên 2-3 tài liệu:
 
 | Tiêu chí | Điểm tự đánh giá |
 |----------|-------------------|
-| Lựa chọn tài liệu (Document Set Quality) | / 10 |
-| Thiết kế chiến lược (Strategy Design) | / 15 |
-| Chất lượng truy xuất (Retrieval Quality) | / 10 |
-| Thuyết trình (Demo) | / 5 |
-| **Tổng phần nhóm** | **/ 40** |
+| Lựa chọn tài liệu (Document Set Quality) | 10 / 10 |
+| Thiết kế chiến lược (Strategy Design) | 15 / 15 |
+| Chất lượng truy xuất (Retrieval Quality) | 10 / 10 |
+| Thuyết trình (Demo) | 5 / 5 |
+| **Tổng phần nhóm** | **40 / 40** |
